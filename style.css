@@ -193,6 +193,30 @@ header p
     color: #262626;
 }
 
+.action-box
+{
+    display: flex; 
+    justify-content: center; 
+    margin: none; 
+}
+
+.action-button
+{
+    padding: 20px; 
+    margin: 10px; 
+    color: white; 
+    border: solid 2px white; 
+    background-color: steelblue; 
+    box-shadow: 0 0 2px black; 
+    cursor: pointer; 
+    transition: box-shadow 400ms ease, background 400ms ease; 
+}
+
+.action-button:hover
+{
+    background-color: lightsteelblue;
+    box-shadow: 0 0 4px black; 
+}
 
 /* Type Colors */
 .grass { background: #9BCC50; }
