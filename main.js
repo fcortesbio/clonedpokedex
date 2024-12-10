@@ -1,3 +1,4 @@
+// Utilities
 function capitalize(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
@@ -6,13 +7,15 @@ function numPadding(number) {
   return number > 999 ? number.toString() : number.toString().padStart(3, "0");
 }
 
+// Configuration
+let currentOffset = 0;
 const pokemonLoadConfig = {
   initialLoadCount: 12, // Number of Pokémon loaded during the initial run
   loadMoreCount: 12 // Number of Pokémon to load when using Load More Pokémon
 };
 
-let currentOffset = 0;
 
+// DOM elements reference
 const pokemonListContainer = document.getElementById("pokemonList");
 const actionsContainer = document.getElementById("actions");
 
@@ -31,10 +34,11 @@ actionsContainer.appendChild(returnButton);
 const searchInput = document.getElementById("searchInput");
 const searchButton = document.getElementById("searchButton");
 
-async function fetchPokemonDetails(url) {
+// Fetch data and search
+async function fetchPokemon(url) {
   try {
     const response = await fetch(url);
-    if (!response.ok) throw new Error("Data for Pokémon could not be fetched");
+    if (!response.ok) throw new Error("Failed to fetch Pokémon data.");
     return await response.json();
   } catch (error) {
     console.error(error.message);
@@ -45,19 +49,19 @@ async function fetchPokemonDetails(url) {
 async function fetchPokemonData(limit = 5, offset = 0) {
   try {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
-    if (!response.ok) throw new Error("Data could not be fetched");
+    if (!response.ok) throw new Error("Failed to fetch Pokémon list.");
     const data = await response.json();
-    return data.results;
+    return data.results; // returns an object as follows: n:{name:"name", url, "url"}, where n is each element in the fetched range
   } catch (error) {
     console.error(error.message);
-    return [];
+    return []; 
   }
 }
 
 async function fetchPokemonByType(type) {
   try {
     const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
-    if (!response.ok) throw new Error("Type not found, please try again.");
+    if (!response.ok) throw new Error("Type not found.");
     const data = await response.json();
     return data.pokemon.map((item) => item.pokemon.name);
   } catch (error) {
@@ -66,20 +70,7 @@ async function fetchPokemonByType(type) {
   }
 }
 
-async function loadPokedex(limit = 12, offset = 0) {
-  try {
-    const pokemonList = await fetchPokemonData(limit, offset);
-    const pokemonDetailsPromises = pokemonList.map((pokemon) => fetchPokemonDetails(pokemon.url));
-    const pokemonData = await Promise.all(pokemonDetailsPromises);
-    pokemonData.forEach(displayPokemon);
-
-    loadMoreButton.style.display = "block";
-    returnButton.style.display = "none";
-  } catch (error) {
-    console.error("Error loading Pokedex:", error.message);
-  }
-}
-
+// Display Pokémon
 function displayPokemon(pokemon) {
   if (!pokemon) return;
 
@@ -112,75 +103,125 @@ function displayPokemon(pokemon) {
   pokemonListContainer.appendChild(pokemonCard);
 }
 
-// Event listener for Load More button
+// Load Pokédex
+async function loadPokedex(limit = 12, offset = 0) {
+  try {
+    const pokemonList = await fetchPokemonData(limit, offset);
+    const pokemonDetailsPromises = pokemonList.map((pokemon) => fetchPokemon(pokemon.url));
+    const pokemonData = await Promise.all(pokemonDetailsPromises);
+    pokemonData.forEach(displayPokemon);
+
+    loadMoreButton.style.display = "block";
+    returnButton.style.display = "none";
+  } catch (error) {
+    console.error("Error loading Pokédex:", error.message);
+  }
+}
+
+// Search and filter Pokémon
+async function processSearchInput(query) {
+  // Clear the Pokédex list when a search is requested
+  pokemonListContainer.innerHTML = "";
+
+  // Split the query into individual parameters using "&"
+  const inputs = query.split("&").map((input) => input.trim());
+  console.log("Inputs:", inputs);
+
+  let pokemonIds = [];
+  let pokemonNames = [];
+  let typeFilter = null;
+  let rangeFilter = { start: null, end: null };
+
+  // Parse inputs
+  inputs.forEach((input) => {
+    if (input.startsWith("type:")) {
+      typeFilter = input.split(":")[1].trim();
+    } 
+    else if (input.startsWith("range:")) {
+      const rangeMatch = input.match(/\[([0-9]+)-([0-9]+)\]/);
+      if (rangeMatch) {
+        rangeFilter.start = parseInt(rangeMatch[1], 10);
+        rangeFilter.end = parseInt(rangeMatch[2], 10);
+      } else {
+        console.error("Invalid range format. Use range:[start-end]");
+      }
+    } 
+    else if (!isNaN(input)) {
+      pokemonIds.push(parseInt(input, 10));
+    } 
+    else {
+      pokemonNames.push(input.toLowerCase());
+    }
+  });
+
+  console.log("Parsed Filters:");
+  console.log("Type Filter:", typeFilter);
+  console.log("Range Filter:", rangeFilter);
+  console.log("Pokemon IDs:", pokemonIds);
+  console.log("Pokemon Names:", pokemonNames);
+
+  // Fetch Pokémon by type if needed
+  let typeResults = [];
+  if (typeFilter) {
+    typeResults = await fetchPokemonByType(typeFilter);
+  }
+
+  // Handle range filter
+  let rangeResults = [];
+  if (rangeFilter.start !== null && rangeFilter.end !== null) {
+    const offset = rangeFilter.start - 1;
+    const limit = rangeFilter.end - rangeFilter.start + 1;
+    console.log("offset-limit:", offset,"-", limit)
+    const rangeData = await fetchPokemonData(limit, offset);
+    rangeResults = rangeData.map((pokemon) => pokemon.name);
+  }
+
+  // Combine all search terms
+  const allPokemonNames = new Set([
+    ...typeResults,
+    ...rangeResults,
+    ...pokemonNames,
+    ...pokemonIds.map((id) => id.toString())
+  ]);
+
+  console.log("All Pokémon Names/IDs:", Array.from(allPokemonNames));
+
+  // Fetch and display Pokémon details
+  const pokemonDetailsPromises = Array.from(allPokemonNames).map((nameOrId) =>
+    fetchPokemon(`https://pokeapi.co/api/v2/pokemon/${nameOrId}`)
+  );
+
+  const pokemonData = await Promise.all(pokemonDetailsPromises);
+  pokemonData.forEach(displayPokemon);
+
+  // Update button visibility
+  loadMoreButton.style.display = "none";
+  returnButton.style.display = "block";
+}
+
+// Event listeners
 loadMoreButton.addEventListener("click", async () => {
   currentOffset += pokemonLoadConfig.loadMoreCount;
   await loadPokedex(pokemonLoadConfig.loadMoreCount, currentOffset);
 });
 
-// Event listener for Return to Pokédex button
 returnButton.addEventListener("click", () => {
   currentOffset = 0;
   pokemonListContainer.innerHTML = "";
   loadPokedex(pokemonLoadConfig.initialLoadCount, currentOffset);
 });
 
-// Parse and process search input
-async function processSearchInput(query) {
-  pokemonListContainer.innerHTML = ""; // Clear the current list
-
-  const inputs = query.split(",").map((input) => input.trim());
-  let pokemonIds = [];
-  let pokemonNames = [];
-  let typeFilter = null;
-  let rangeFilter = null;
-
-  // Parse inputs
-  inputs.forEach((input) => {
-    if (input.startsWith("type:")) {
-      typeFilter = input.split(":")[1].trim();
-    } else if (input.startsWith("range:")) {
-      const [_, start, end] = input.split(" ");
-      rangeFilter = { start: parseInt(start), end: parseInt(end) };
-    } else if (!isNaN(input)) {
-      pokemonIds.push(parseInt(input));
-    } else {
-      pokemonNames.push(input.toLowerCase());
-    }
-  });
-
-  // Fetch by type if needed
-  let typeResults = [];
-  if (typeFilter) {
-    typeResults = await fetchPokemonByType(typeFilter);
-  }
-
-  // Combine range and type results if both exist
-  if (rangeFilter) {
-    typeResults = typeResults.filter(
-      (_, index) => index >= rangeFilter.start && index < rangeFilter.end
-    );
-  }
-
-  // Fetch and display Pokémon details
-  const pokemonDetailsPromises = [
-    ...pokemonIds.map((id) => fetchPokemonDetails(`https://pokeapi.co/api/v2/pokemon/${id}`)),
-    ...pokemonNames.map((name) => fetchPokemonDetails(`https://pokeapi.co/api/v2/pokemon/${name}`)),
-    ...typeResults.map((name) => fetchPokemonDetails(`https://pokeapi.co/api/v2/pokemon/${name}`))
-  ];
-
-  const pokemonData = await Promise.all(pokemonDetailsPromises);
-  pokemonData.forEach(displayPokemon);
-
-  loadMoreButton.style.display = "none";
-  returnButton.style.display = "block";
-}
-
-// Search Pokémon functionality
 searchButton.addEventListener("click", () => {
   const query = searchInput.value.trim();
   processSearchInput(query);
 });
 
-// Execute initial load of Pokédex
+searchInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    const query = searchInput.value.trim();
+    processSearchInput(query);
+  }
+});
+
+// Initial load
 loadPokedex(pokemonLoadConfig.initialLoadCount, currentOffset);
