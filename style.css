@@ -61,7 +61,7 @@ header
     align-content: center;
     justify-content: space-between;
     display: flex;
-    color: #ffffff;
+    color: white;
     text-shadow: 0 0 5px #212121;
     height: 100%; width: 120px; 
     margin: 0; padding: 0px;
