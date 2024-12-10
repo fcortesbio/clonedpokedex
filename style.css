@@ -1,0 +1,224 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+*
+{
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+    /* border: solid 1px black; */
+}
+
+body 
+{
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom, white, lightsteelblue);
+    color: #212121;
+    line-height: 1.5;
+}
+
+/* Header, navigation and serach bar */
+header
+{   
+    margin: 0 auto;
+    text-align: center;
+    /* padding: 30px; */
+    background-color: #313131;
+    color: white;
+    font-weight: 500;
+    box-shadow: 
+        0px 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.navbar 
+{
+    display: flex; /* set navbar as flex container */
+    align-items: center;
+    justify-content: center; /* center ul horizontal;y */
+    background: rgb(95, 180, 200); 
+    padding: 0; margin: 0;
+    overflow: hidden; /* */
+    /* box-shadow: 0 0px 3px rgba(0, 0, 0, 0.4); */
+}
+
+.navbar ul
+{ 
+    list-style-type: none;/*rm bullets*/
+    width: 75%;  
+    padding: 0; /*rm default padding from ul*/
+    display: flex; /*Ul is also a flex container*/
+    align-items: center; 
+    justify-content: space-around;
+    height: 80px;
+}
+
+.navbar li
+{
+    height: 100%;
+}
+
+.navbar a 
+{   
+    display: flex;
+    align-content: center;
+    justify-content: space-between;
+    display: flex;
+    color: white;
+    text-shadow: 0 0 5px #212121;
+    height: 100%; width: 120px; 
+    margin: 0; padding: 0px;
+    /* white-space: nowrap; */
+    text-decoration: none;
+    display: block;
+    transition: background 600ms ease;
+}
+
+.navbar a:hover
+{
+    /* transform: scale(110%); */
+    background-color: steelblue;
+}
+
+header h1
+{
+    margin-top: 10px;
+    font-weight: 600;
+    font-size: 3rem;
+}
+
+header p
+{
+    font-size: 2rem;
+}
+
+.search-area
+{
+    padding: 20px;
+    /* margin: 20px; */
+}
+
+#searchInput {
+    width: 30%;
+    border-radius: 20px;
+    padding: 10px 20px;
+    border: none
+}
+
+#searchButton
+{
+    background-color: #00FFFF;
+    color: #252525;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+#pokemonList
+{
+    /* font-family: 'Courier New', Courier, monospace; */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;    
+    font-weight: 400;
+    font-style: normal;
+}
+
+.container
+{   
+    background: linear-gradient(to bottom right, lightsteelblue, steelblue);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 300ms ease, box-shadow 400ms ease;
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(45deg, rgba(#FF998B,1) 0%, rgba(#FF6D88,1) 100%);
+    border: solid 10px;
+    
+}
+
+.container:hover
+{
+    transform: scale(1.05);
+    box-shadow:
+        0px 6px 12px rgba(0, 0, 0, 0.6)
+}
+
+.sprite
+{
+    width: 180px; height: auto;
+    background-color: white;
+    border-radius: 50%;
+    padding: 10px;
+    margin: 15px auto;
+    box-shadow: 
+        0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+.pokemon-id-name
+{
+    color: #333333;
+    font-weight: 800;
+}
+
+.type {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.type > div {
+    width: 100px;
+    border: white solid 2px;
+    padding: 5px 10px;
+    border-radius: 55px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: white;
+    box-shadow: 0 0  6px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 0 4px #212121;
+}
+
+.abilities-list strong {
+    color: #212112;
+}
+
+.abilities-list {
+    margin-top: 10px;
+    text-align: left;
+    font-size: 0.9rem;
+    color: #262626;
+}
+
+
+/* Type Colors */
+.grass { background: #9BCC50; }
+.poison { background: #B97FC9; }
+.fire { background: #FD7D24; }
+.flying { background: #3DC7EF;}
+.water { background: #4692C4; }
+.bug { background: #729F3F; }
+.normal { background: #A4ACAF;}
+.electric { background: #EED535;}
+.ground { background: #F7DE3F; }
+.fairy { background: #FDB9E9; }
+.psychic { background: #F366B9; }
+.dragon { background: #53A4CF; }
+.rock { background: #A38C21; }
+.ice { background: #51C4E7; }
+.fighting { background: #D56723; }
+.ghost { background: #7B62A3; }
+.steel { background: #9EB7B8; }
+.dark { background: #707070; }
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 20px;
+    background: #026873;
+    color: white;
+    font-size: 0.9rem;
+}
