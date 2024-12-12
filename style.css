@@ -138,6 +138,7 @@ header p
     
 }
 
+
 .container:hover
 {
     transform: scale(1.05);
@@ -217,6 +218,18 @@ header p
     background-color: lightsteelblue;
     box-shadow: 0 0 4px black; 
 }
+
+.no-results{
+    margin: 25px; border: solid 6px red;
+    border-radius: 25;
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    /* position:sticky; */
+    
+    
+}
+]
 
 /* Type Colors */
 .grass { background: #9BCC50; }

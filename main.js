@@ -103,6 +103,24 @@ function displayPokemon(pokemon) {
   pokemonListContainer.appendChild(pokemonCard);
 }
 
+// Display not found
+function displayNone(){
+  const noResultsBox = document.createElement("section");
+  noResultsBox.classList.add("no-results");
+
+  noResultsBox.innerHTML = `
+  <h2>No Pokémon was found matching with this search</h2>
+  <span>Try the following to find results:</span>
+  <ul>
+      <li>Reduce the number of search parameters</li>
+      <li>Try Pokémon types searches one by one</li>
+      <li>Try looking for Pokémon of more than one size and shape</li>
+  </ul>
+`;
+pokemonListContainer.appendChild(noResultsBox)
+}
+
+
 // Load Pokédex
 async function loadPokedex(limit = 12, offset = 0) {
   try {
@@ -224,4 +242,5 @@ searchInput.addEventListener("keydown", (event) => {
 });
 
 // Initial load
-loadPokedex(pokemonLoadConfig.initialLoadCount, currentOffset);
+// loadPokedex(pokemonLoadConfig.initialLoadCount, currentOffset);
+displayNone();
