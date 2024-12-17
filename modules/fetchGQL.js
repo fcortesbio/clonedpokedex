@@ -105,16 +105,22 @@ export async function fetchByKeyword(keyword, value) {
       }
     `,
   };
-
+  
   const query = queries[keyword];
   if (!query) return [];
 
   const variables = { [keyword]: value };
   try {
     const response = await fetchGraphQL(query, variables);
-    return response.data[Object.keys(response.data)[0]].map(
-      (item) => item.pokemon_id || item.id
-    );
+    const dataKey = Object.keys(response.data)[0]; 
+    if (response.data[dataKey]) {
+      return response.data[dataKey].map(
+        (item) => item.pokemon_id || item.id
+      );
+    } else {
+      console.error(`No data found for ${keyword}: ${value}`);
+      return [];
+    }
   } catch (err) {
     console.error(`Error fetching ${keyword}:`, err);
     return [];
