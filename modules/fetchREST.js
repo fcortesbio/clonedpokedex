@@ -1,6 +1,8 @@
 export async function getData(startId, endId, batchSize = 20) {
   if (startId > endId) {
-    throw new Error(`Invalid input: startId (${startId}) cannot be greater than endId (${endId}).`);
+    throw new Error(
+      `Invalid input: startId (${startId}) cannot be greater than endId (${endId}).`
+    );
   }
 
   const pokemonData = [];
@@ -8,7 +10,11 @@ export async function getData(startId, endId, batchSize = 20) {
   endId = endId || startId;
 
   console.log(
-    `[INFO] ${startId === endId ? `Fetching data for Pokemon ID=${startId}` : `Fetching data from ID=${startId} to ID=${endId}`}`
+    `[INFO] ${
+      startId === endId
+        ? `Fetching data for Pokemon ID=${startId}`
+        : `Fetching data from ID=${startId} to ID=${endId}`
+    }`
   );
 
   while (offset < endId) {
@@ -48,7 +54,8 @@ async function fetchWithRetry(url, retries = 3) {
   for (let i = 0; i < retries; i++) {
     try {
       const response = await fetch(url);
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`HTTP error! Status: ${response.status}`);
       return await response.json();
     } catch (error) {
       console.warn(`Retry ${i + 1}/${retries} for ${url}`);
@@ -56,4 +63,3 @@ async function fetchWithRetry(url, retries = 3) {
   }
   throw new Error(`Failed to fetch after ${retries} attempts: ${url}`);
 }
-

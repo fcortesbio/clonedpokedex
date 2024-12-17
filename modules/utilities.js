@@ -5,6 +5,16 @@ export function toCaps(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
+export function cleanInput(input) {input.replace(/\s+/g, "")};
+
+export function parseRange(range) {
+  const [start, end] = range.split(":").map(Number);
+  if (start && end && start <= end) {
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }
+  return [];
+};
+
 export function numPadding(number) {
   // Introduce the padding zeros for numbers lower than 999
   return number > 999 ? number.toString() : number.toString().padStart(3, "0");

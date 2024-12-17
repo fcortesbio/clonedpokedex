@@ -15,7 +15,7 @@ async function fetchGraphQL(query, variables) {
   return await result.json();
 }
 
-export async function getAttributes(startId, endId, batchSize = 20) {
+export async function fetchPokemonAttributes(startId, endId, batchSize = 20) {
   const pokemonData = [];
   endId = endId || startId;
 
@@ -62,4 +62,62 @@ export async function getAttributes(startId, endId, batchSize = 20) {
   }
 
   return pokemonData;
+}
+
+export async function fetchByName(name) {
+  const query = `
+    query fetchByName($name: String!) {
+      pokemon_v2_pokemon(where: { name: { _ilike: $name } }) {
+        id
+      }
+    }
+  `;
+  try {
+    const response = await fetchGraphQL(query, { name });
+    return response.data.pokemon_v2_pokemon.map((pokemon) => pokemon.id);
+  } catch (err) {
+    console.error(`Error fetching name:`, err);
+    return [];
+  }
+}
+
+export async function fetchByKeyword(keyword, value) {
+  // Helper functions
+  const queries = {
+    type: `
+      query fetchType($type: String!) {
+        pokemon_v2_pokemontype(where: { pokemon_v2_type: { name: { _ilike: $type } } }) {
+          pokemon_id
+        }
+      }
+    `,
+    ability: `
+      query fetchAbility($ability: String!) {
+        pokemon_v2_pokemonability(where: { pokemon_v2_ability: { name: { _ilike: $ability } } }) {
+          pokemon_id
+        }
+      }
+    `,
+    region: `
+      query fetchRegion($region: String!) {
+        pokemon_v2_pokemonspecies(where: { pokemon_v2_generation: { name: { _ilike: $region } } }) {
+          id
+        }
+      }
+    `,
+  };
+
+  const query = queries[keyword];
+  if (!query) return [];
+
+  const variables = { [keyword]: value };
+  try {
+    const response = await fetchGraphQL(query, variables);
+    return response.data[Object.keys(response.data)[0]].map(
+      (item) => item.pokemon_id || item.id
+    );
+  } catch (err) {
+    console.error(`Error fetching ${keyword}:`, err);
+    return [];
+  }
 }
