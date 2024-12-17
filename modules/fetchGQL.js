@@ -1,25 +1,21 @@
 async function fetchGraphQL(query, variables) {
-  const result = await fetch(
-    "https://beta.pokeapi.co/graphql/v1beta",
-    {
-      method: "POST",
-      
-      headers: 
-      {
-        "Content-Type": "application/json"
-      },
-      
-      body: JSON.stringify({
-        variables: variables,
-        query: query,
-      }),
-    }
-  );
+  const result = await fetch("https://beta.pokeapi.co/graphql/v1beta", {
+    method: "POST",
 
-return await result.json();
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+    body: JSON.stringify({
+      variables: variables,
+      query: query,
+    }),
+  });
+
+  return await result.json();
 }
 
-export async function getData(startId, endId, batchSize = 20) {
+export async function getAttributes(startId, endId, batchSize = 20) {
   const pokemonData = [];
   endId = endId || startId;
 
