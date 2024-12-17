@@ -1,5 +1,5 @@
 import { fetchByKeyword, fetchByName } from "./fetchGQL.js";
-import { cleanInput, parseRange, print } from "./utilities.js";
+import { removeWhiteSpace, parseRange, print } from "./utilities.js";
 
 // To be tested
 

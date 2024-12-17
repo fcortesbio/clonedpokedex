@@ -82,7 +82,6 @@ export async function fetchByName(name) {
 }
 
 export async function fetchByKeyword(keyword, value) {
-  // Helper functions
   const queries = {
     type: `
       query fetchType($type: String!) {

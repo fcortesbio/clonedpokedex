@@ -1,17 +1,41 @@
-export function print(...content) {console.log(...content)} ;
-export function capitalize(word) {return word.charAt(0).toUpperCase() + word.slice(1);}
-export function cleanInput(input) {return input.replace(/\s+/g, "")};
-export function trimDash(name) {return name.trim().toLowerCase().replace(" ", "-");}
-export function numPad(n) {return n > 999?n.toString():n.toString().padStart(3, "0");}
+export function print(...content) {
+  console.log(...content);
+} 
+
+export function capitalize(word) {
+  return word
+  .charAt(0)
+  .toUpperCase()
+  + word.slice(1);}
+
+export function removeWhiteSpace(input) {
+  return input
+  .replace(/\s+/g, "")}; // remove spaces
+
+export function kebabCase(text) {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-zA-Z0-9]+/g, "-"); 
+}
+
+export function leadingZeros(n, length = 3) {
+  return n.toString().padStart(length, "0");
+}
 
 export function parseRange(range) {
-  // to be adjusted
-  const [start, end] = range.split(":").map(Number);
-  if (start && end && start <= end) {
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  try {
+    let [start, end] = range.split(":").map(Number);
+    if (start && end && start <= end) {
+      return [start, end];
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error(error); 
+    return []; 
   }
-  return [];
-}; 
+}
 
 export function parseListIds(numbers) {
   if (!Array.isArray(numbers) || numbers.length === 0) return [];

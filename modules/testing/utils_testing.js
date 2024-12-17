@@ -1,16 +1,16 @@
-import {print, capitalize, cleanInput, trimDash, numPad, parseRange, parseListIds}  from "../utilities.js";
+import {print, capitalize, removeWhiteSpace, kebabCase, leadingZeros, parseRange, parseListIds}  from "../utilities.js";
 
 let testName = capitalize("john"); 
 print("capitalize: ", testName); // Output: "John"
 
-let testNumber = numPad(12);
-print("numPad: ",testNumber); // Output: "012"
+let testNumber = leadingZeros(12);
+print("leadingZeros: ",testNumber); // Output: "012"
 
-let testInput = cleanInput("lorem ipsum dolor sit amet")
-print("cleanInput: ",testInput)
+let testInput = removeWhiteSpace("lorem ipsum dolor sit amet")
+print("removeWhiteSpace: ",testInput)
 
-testName = trimDash("Super Power");
-print("trimDash: ", testName)
+testName = kebabCase("Super Power");
+print("kebabCase: ", testName)
 
 let myRange = parseRange("15:25");
 print("parseRange: ", ... myRange);
