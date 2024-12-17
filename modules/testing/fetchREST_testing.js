@@ -1,3 +1,6 @@
+function print(...content) {console.log(...content)} ; // lazy shortcut
+import * as pkmFetch from "../fetchREST.js";
+
 let pokemon
 pokemon = await pkmFetch.getData(1, 5)
 print(pokemon)
