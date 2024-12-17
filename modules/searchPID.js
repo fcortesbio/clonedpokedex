@@ -1,6 +1,8 @@
 import { fetchByKeyword, fetchByName } from "./fetchGQL.js";
 import { cleanInput, parseRange, print } from "./utilities.js";
 
+// To be tested
+
 async function parseSearchInput(query) {
   const sections = query.split(",").map((section) => section.trim());
   const allPIDs = new Set(); // prevents request duplication

@@ -1,10 +1,19 @@
-function print(...content) {console.log(...content)} ; // lazy shortcut
-import * as utils from "../utilities.js";
+import {print, capitalize, cleanInput, trimDash, numPad, parseRange, parseListIds}  from "../utilities.js";
 
-const userName = utils.toCaps("john"); 
-const paddedNumber = utils.numPadding(12);
-const groupedIds = utils.parseListIds([1, 2, 4, 5, 6, 8, 9]);
+let testName = capitalize("john"); 
+print("capitalize: ", testName); // Output: "John"
 
-print(userName); // Output: "John"
-print(paddedNumber); // Output: "012"
-print(groupedIds); // Output: [[1, 2], 4, [5, 6], [8, 9]]
+let testNumber = numPad(12);
+print("numPad: ",testNumber); // Output: "012"
+
+let testInput = cleanInput("lorem ipsum dolor sit amet")
+print("cleanInput: ",testInput)
+
+testName = trimDash("Super Power");
+print("trimDash: ", testName)
+
+let myRange = parseRange("15:25");
+print("parseRange: ", ... myRange);
+
+let testList = parseListIds([1, 2, 4, 5, 6, 8, 9]);
+print("parseListIds: ", ...testList); // Output: [[1, 2], 4, [5, 6], [8, 9]]
