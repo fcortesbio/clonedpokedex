@@ -24,7 +24,7 @@ export async function fetchPokemonAttributes(startId, endId, batchSize = 20) {
 
   console.log(
     endId === startId
-      ? `Fetching data for Pokemon ID=${endId}`
+      ? `Fetching data for Pokémon ID=${endId}`
       : `Fetching data for Pokémon from ID=${startId} to ID=${endId}`
   );
 
@@ -38,34 +38,73 @@ export async function fetchPokemonAttributes(startId, endId, batchSize = 20) {
             name
           }
         }
+        stats: pokemon_v2_pokemonstats {
+          base_stat
+          stat: pokemon_v2_stat {
+            name
+          }
+        }
+        abilities: pokemon_v2_pokemonabilities {
+          ability: pokemon_v2_ability {
+            name
+          }
+        }
+        species: pokemon_v2_pokemonspecy {
+          flavor_text: pokemon_v2_pokemonspeciesflavortexts(where: { language_id: { _eq: 9 } }, limit: 1) {
+            flavor_text
+          }
+        }
+        sprites: pokemon_v2_pokemonsprites {
+          sprites(path: "front_default")
+        }
       }
     }
   `;
 
   try {
-    const response = await fetchGraphQL(query, { startId, endId });
-    console.log("GraphQL Response:", response);
+    for (let i = startId; i <= endId; i += batchSize) {
+      const batchStart = i;
+      const batchEnd = Math.min(i + batchSize - 1, endId);
+      console.log(`Fetching batch: ID ${batchStart} to ${batchEnd}`);
 
-    const { data } = response;
+      const response = await fetchGraphQL(query, {
+        startId: batchStart,
+        endId: batchEnd,
+      });
 
-    if (data && data.pokemon_v2_pokemon) {
-      for (const pokemon of data.pokemon_v2_pokemon) {
-        const filteredData = {
-          id: pokemon.id,
-          name: pokemon.name,
-          types: pokemon.types.map((typeData) => typeData.type.name),
-        };
-        pokemonData.push(filteredData);
+      const { data } = response;
+
+      if (data && data.pokemon_v2_pokemon) {
+        for (const pokemon of data.pokemon_v2_pokemon) {
+          const filteredData = {
+            id: pokemon.id,
+            name: pokemon.name,
+            types: pokemon.types.map((typeData) => typeData.type.name),
+            stats: pokemon.stats.map((statData) => ({
+              name: statData.stat.name,
+              value: statData.base_stat,
+            })),
+            abilities: pokemon.abilities.map(
+              (abilityData) => abilityData.ability.name
+            ),
+            description:
+              pokemon.species?.flavor_text?.[0]?.flavor_text || "No description available.",
+            sprite: pokemon.sprites?.sprites || null,
+          };
+          pokemonData.push(filteredData);
+        }
+      } else {
+        console.error(`No data returned for batch ID=${batchStart} to ID=${batchEnd}`);
       }
-    } else {
-      console.error("No data returned for the specified query.");
     }
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("Error fetching Pokémon data:", error);
   }
 
   return pokemonData;
 }
+
+
 
 export async function fetchByName(name) {
   const query = `
@@ -100,7 +139,7 @@ export async function fetchByKeyword(keyword, value) {
         }
       }
     `,
-  }; // Removed region query
+  };
 
   const query = queries[keyword];
   if (!query) return [];

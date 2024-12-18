@@ -1,22 +1,27 @@
 export function print(...content) {
   console.log(...content);
-} 
+}
+
+export function removeScapeCharacters(input) {
+  return input
+    .replace(/[\n\f\r\t]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 export function capitalize(word) {
-  return word
-  .charAt(0)
-  .toUpperCase()
-  + word.slice(1);}
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
 
 export function removeWhiteSpace(input) {
-  return input
-  .replace(/\s+/g, "")}; // remove spaces
+  return input.replace(/\s+/g, "");
+} 
 
 export function kebabCase(text) {
   return text
     .trim()
     .toLowerCase()
-    .replace(/[^a-zA-Z0-9]+/g, "-"); 
+    .replace(/[^a-zA-Z0-9]+/g, "-");
 }
 
 export function leadingZeros(n, length = 3) {
@@ -32,8 +37,8 @@ export function parseRange(range) {
       return [];
     }
   } catch (error) {
-    console.error(error); 
-    return []; 
+    console.error(error);
+    return [];
   }
 }
 
@@ -55,7 +60,7 @@ export function parseListIds(numbers) {
       tempGroup = [current];
     }
   }
-  result.push(tempGroup.length === 1 ? tempGroup[0] : [...tempGroup]); 
+  result.push(tempGroup.length === 1 ? tempGroup[0] : [...tempGroup]);
 
-return result;
+  return result;
 }
