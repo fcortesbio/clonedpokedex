@@ -112,7 +112,7 @@ header p
     cursor: pointer;
 }
 
-#pokemonList
+#pokedexContainer
 {
     /* font-family: 'Courier New', Courier, monospace; */
     display: grid;
@@ -229,11 +229,10 @@ header p
     
     
 }
-]
 
 /* Type Colors */
-.grass { background: #9BCC50; }
 .poison { background: #B97FC9; }
+.grass { background-color: #9BCC50; }
 .fire { background: #FD7D24; }
 .flying { background: #3DC7EF;}
 .water { background: #4692C4; }

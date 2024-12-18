@@ -1,9 +1,7 @@
 import { fetchByKeyword, fetchByName } from "./fetchGQL.js";
 import { parseRange, print } from "./utilities.js";
 
-// To be tested
-
-async function parseSearchInput(query) {
+export async function processSearchInput(query) {
   const sections = query.split(",").map((section) => section.trim());
   const allPIDs = new Set(); // prevents request duplication
   print(allPIDs);
@@ -16,7 +14,7 @@ async function parseSearchInput(query) {
       allPIDs.add(Number(input));
     } else if (input.includes(":")) {
       const [keyword, value] = input.split(":").map((s) => s.trim());
-      if (keyword.match(/type|ability|region/i)) {
+      if (keyword.match(/type|ability/i)) {
         const ids = await fetchByKeyword(keyword.toLowerCase(), value);
         ids.forEach((id) => allPIDs.add(id));
       } else if (!isNaN(keyword) && !isNaN(value)) {
@@ -34,3 +32,6 @@ async function parseSearchInput(query) {
   console.log("Final Pokémon IDs:", outList);
   return outList;
 }
+
+
+

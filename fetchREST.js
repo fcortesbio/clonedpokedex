@@ -1,4 +1,4 @@
-export async function getData(startId, endId, batchSize = 20) {
+async function getData(startId, endId, batchSize = 20) {
   if (startId > endId) {
     throw new Error(
       `Invalid input: startId (${startId}) cannot be greater than endId (${endId}).`
