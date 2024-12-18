@@ -1,4 +1,7 @@
 async function fetchGraphQL(query, variables) {
+  console.log("GraphQL Query:", query);
+  console.log("GraphQL Variables:", variables);
+
   const result = await fetch("https://beta.pokeapi.co/graphql/v1beta", {
     method: "POST",
 
@@ -97,15 +100,8 @@ export async function fetchByKeyword(keyword, value) {
         }
       }
     `,
-    region: `
-      query fetchRegion($region: String!) {
-        pokemon_v2_pokemonspecies(where: { pokemon_v2_generation: { name: { _ilike: $region } } }) {
-          id
-        }
-      }
-    `,
-  };
-  
+  }; // Removed region query
+
   const query = queries[keyword];
   if (!query) return [];
 
