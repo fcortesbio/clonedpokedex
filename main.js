@@ -214,10 +214,9 @@ async function fetchREST(startId, endId, batchSize = 20) {
   endId = endId || startId;
 
   console.log(
-    `[INFO] ${
-      startId === endId
-        ? `Fetching data for Pokemon ID=${startId}`
-        : `Fetching data from ID=${startId} to ID=${endId}`
+    `[INFO] ${startId === endId
+      ? `Fetching data for Pokemon ID=${startId}`
+      : `Fetching data from ID=${startId} to ID=${endId}`
     }`
   );
 
@@ -292,30 +291,31 @@ function unpackPokemonData(pokemon) {
     types: pokemon.types,
     description: removeScapeCharacters(pokemon.description),
     abilities: pokemon.abilities,
-    'sprite-url': pokemon.sprite} // Assuming 'sprite' holds the URL
+    'sprite-url': pokemon.sprite
+  } // Assuming 'sprite' holds the URL
   const stats = pokemon.stats;
   for (const key in stats) {
     const stat = stats[key];
-    pokemonData[stat.name] = stat.value; 
+    pokemonData[stat.name] = stat.value;
   }
   return pokemonData;
 }
 
 function displayPokemonCard(pokemonData) { // Changed parameter to pokemonData
-  if (!pokemonData) return; 
+  if (!pokemonData) return;
 
   const pokemonCard = document.createElement("div");
   pokemonCard.classList.add("container");
-  
-  const abilities = pokemonData.abilities 
+
+  const abilities = pokemonData.abilities
     .map(ability => `<a href="https://pokemondb.net/ability/${ability.toLowerCase()}">${capitalize(ability)}</a>`)
     .join(", ");
-  
+
   const types = pokemonData.types
     .map(type => `<div class="${type}">${capitalize(type)}</div>`)
     .join("");
-  
-    // Stats list using the unpacked stat values
+
+  // Stats list using the unpacked stat values
   const statsList = Object.entries(pokemonData)
     .filter(([key]) => ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'].includes(key))
     .map(([name, value]) => `<li>${capitalize(name)}: ${value}</li>`)
@@ -364,16 +364,124 @@ loadMoreButton.textContent = "Load More Pokémon";
 actionsContainer.appendChild(loadMoreButton);
 
 loadMoreButton.addEventListener("click", () => {
-  currentStartID += INITIAL_POKEMON_COUNT; 
+  currentStartID += INITIAL_POKEMON_COUNT;
   currentEndID += INITIAL_POKEMON_COUNT; // Update currentEndID as well
   loadPokedex(currentStartID, currentEndID);
 });
 
 
-// const searchInput = document.getElementById("searchInput");
-// const searchButton = document.getElementById("searchButton");
-// const returnButton = document.createElement("button");
-// returnButton.className = "action-button";
-// returnButton.textContent = "Return to Pokédex";
-// returnButton.style.display = "none"; // Initially hidden
-// actionsContainer.appendChild(returnButton);
+// Search functions
+const searchInput = document.getElementById("searchInput");
+const searchButton = document.getElementById("searchButton");
+const returnButton = document.createElement("button");
+returnButton.className = "action-button";
+returnButton.textContent = "Return to Pokédex";
+returnButton.style.display = "none"; // Initially hidden
+actionsContainer.appendChild(returnButton);
+
+searchButton.addEventListener("click", () => {
+  const query = searchInput.value.trim();
+  processSearchInput(query);
+});
+
+searchInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    const query = searchInput.value.trim();
+    processSearchInput(query);
+  }
+});
+
+returnButton.addEventListener("click", () => {
+  currentOffset = 0;
+  pokemonListContainer.innerHTML = "";
+  loadPokedex(pokemonLoadConfig.initialLoadCount, currentOffset);
+});
+
+async function processSearchInput(query) {
+  const sections = query.split(",").map((section) => section.trim());
+  const allPIDs = new Set(); // prevents request duplication
+  print(allPIDs);
+
+  for (const section of sections) {
+    const input = cleanInput(section);
+
+    if (!isNaN(input)) {
+      // Numeric input => Direct ID
+      allPIDs.add(Number(input));
+    } else if (input.includes(":")) {
+      const [keyword, value] = input.split(":").map((s) => s.trim());
+      if (keyword.match(/type|ability/i)) {
+        const ids = await fetchByKeyword(keyword.toLowerCase(), value);
+        ids.forEach((id) => allPIDs.add(id));
+      } else if (!isNaN(keyword) && !isNaN(value)) {
+        // Range input (e.g., 1:10)
+        parseRange(input).forEach((id) => allPIDs.add(id));
+      }
+    } else {
+      // Assume it's a Pokémon name
+      const ids = await fetchByName(input);
+      ids.forEach((id) => allPIDs.add(id));
+    }
+  }
+
+  const outList = Array.from(allPIDs);
+  console.log("Final Pokémon IDs:", outList);
+  return outList;
+}
+
+async function fetchByName(name) {
+  const query = `
+    query fetchByName($name: String!) {
+      pokemon_v2_pokemon(where: { name: { _ilike: $name } }) {
+        id
+        }
+        }
+        `;
+  try {
+    const response = await fetchGraphQL(query, { name });
+    return response.data.pokemon_v2_pokemon.map((pokemon) => pokemon.id);
+  } catch (err) {
+    console.error(`Error fetching name:`, err);
+    return [];
+  }
+}
+
+async function fetchByKeyword(keyword, value) {
+  const queries = {
+    type: `
+        query fetchType($type: String!) {
+          pokemon_v2_pokemontype(where: { pokemon_v2_type: { name: { _ilike: $type } } }) {
+            pokemon_id
+          }
+        }
+      `,
+    ability: `
+        query fetchAbility($ability: String!) {
+          pokemon_v2_pokemonability(where: { pokemon_v2_ability: { name: { _ilike: $ability } } }) {
+            pokemon_id
+          }
+        }
+      `,
+  };
+
+  const query = queries[keyword];
+  if (!query) return [];
+
+  const variables = { [keyword]: value };
+  try {
+    const response = await fetchGraphQL(query, variables);
+    const dataKey = Object.keys(response.data)[0];
+    if (response.data[dataKey]) {
+      return response.data[dataKey].map(
+        (item) => item.pokemon_id || item.id
+      );
+    } else {
+      console.error(`No data found for ${keyword}: ${value}`);
+      return [];
+    }
+  } catch (err) {
+    console.error(`Error fetching ${keyword}:`, err);
+    return [];
+  }
+}
+
