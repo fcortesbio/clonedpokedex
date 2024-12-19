@@ -392,41 +392,59 @@ searchInput.addEventListener("keydown", (event) => {
 });
 
 returnButton.addEventListener("click", () => {
-  currentOffset = 0;
-  pokemonListContainer.innerHTML = "";
-  loadPokedex(pokemonLoadConfig.initialLoadCount, currentOffset);
+  returnButton.style.display = "none";
+  pokedexContainer.innerHTML = "";
+  loadPokedex(currentStartID, currentEndID);
 });
 
+
 async function processSearchInput(query) {
+  if (!query) {
+    alert("Please enter a valid search query.");
+    return;
+  }
+
   const sections = query.split(",").map((section) => section.trim());
-  const allPIDs = new Set(); // prevents request duplication
-  print(allPIDs);
+  const allPIDs = new Set();
 
   for (const section of sections) {
-    const input = cleanInput(section);
+    const input = removeWhiteSpace(section).toLowerCase();
 
     if (!isNaN(input)) {
-      // Numeric input => Direct ID
+      // Direct ID search
       allPIDs.add(Number(input));
     } else if (input.includes(":")) {
+      const rangeIDs = parseRange(input);
+      rangeIDs.forEach((id) => allPIDs.add(id));
+    } else if (input.includes("type:") || input.includes("ability:")) {
       const [keyword, value] = input.split(":").map((s) => s.trim());
-      if (keyword.match(/type|ability/i)) {
-        const ids = await fetchByKeyword(keyword.toLowerCase(), value);
-        ids.forEach((id) => allPIDs.add(id));
-      } else if (!isNaN(keyword) && !isNaN(value)) {
-        // Range input (e.g., 1:10)
-        parseRange(input).forEach((id) => allPIDs.add(id));
-      }
+      const ids = await fetchByKeyword(keyword, value);
+      ids.forEach((id) => allPIDs.add(id));
     } else {
-      // Assume it's a Pokémon name
+      // Name search
       const ids = await fetchByName(input);
       ids.forEach((id) => allPIDs.add(id));
     }
   }
 
-  const outList = Array.from(allPIDs);
-  console.log("Final Pokémon IDs:", outList);
-  return outList;
+  const finalIDs = Array.from(allPIDs).sort((a, b) => a - b);
+  if (finalIDs.length === 0) {
+    alert("No Pokémon matched your search query.");
+    return;
+  }
+
+  displaySearchResults(finalIDs);
+}
+
+async function displaySearchResults(ids) {
+  pokedexContainer.innerHTML = ""; // Clear the current display
+  const pokemonData = await fetchPokemonAttributes(ids[0], ids[ids.length - 1]);
+
+  pokemonData
+    .filter((pokemon) => ids.includes(pokemon.id)) // Ensure only requested Pokémon are shown
+    .forEach(displayPokemonCard);
+
+  returnButton.style.display = "block"; // Show the 'Return to Pokédex' button
 }
 
 async function fetchByName(name) {
