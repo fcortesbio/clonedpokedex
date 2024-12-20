@@ -25,18 +25,18 @@ function removeWhiteSpace(input) {
   return input.replace(/\s+/g, "");
 }
 
-function kebabCase(text) {
+function kebabCase(text) { // this was never used
   return text
     .trim()
     .toLowerCase()
     .replace(/[^a-zA-Z0-9]+/g, "-");
 }
 
-function leadingZeros(n, length = 3) {
+function leadingZeros(n, length = 3) { // used for padding numbers on displayPokemonCard
   return n.toString().padStart(length, "0");
 }
 
-function parseRange(range) {
+function parseRange(range) { // used for parsing range queries in search
   try {
     let [start, end] = range.split(":").map(Number);
     if (start && end && start <= end) {
@@ -50,7 +50,7 @@ function parseRange(range) {
   }
 }
 
-function parseListIds(numbers) {
+function parseListIds(numbers) { // used for parsing list queries in search 
   if (!Array.isArray(numbers) || numbers.length === 0) return [];
 
   const sortedNumbers = [...new Set(numbers)].sort((a, b) => a - b);
@@ -162,110 +162,111 @@ async function fetchPokemonAttributes(startId, endId, batchSize = 20) {
       });
       console.log(response)
 
-      // If GraphQL fails, fallback to REST API
-      if (!response) {
-        const restData = await fetchREST(batchStart, batchEnd, batchSize);
-        pokemonData.push(...restData);
-      } else {
-        const { data } = response;
-        if (data && data.pokemon_v2_pokemon) {
-          for (const pokemon of data.pokemon_v2_pokemon) {
-            const filteredData = {
-              id: pokemon.id,
-              name: pokemon.name,
-              types: pokemon.types.map((typeData) => typeData.type.name),
-              stats: pokemon.stats.map((statData) => ({
-                name: statData.stat.name,
-                value: statData.base_stat,
-              })),
-              abilities: pokemon.abilities.map(
-                (abilityData) => abilityData.ability.name
-              ),
-              description:
-                pokemon.species?.flavor_text?.[0]?.flavor_text ||
-                "No description available.",
-              sprite: pokemon.sprites?.[0]?.sprites || null,
-            };
-            pokemonData.push(filteredData);
-          }
-        } else {
-          console.error(
-            `No data returned for batch ID=${batchStart} to ID=${batchEnd}`
-          );
+      // // If GraphQL fails, fallback to REST API
+      // if (!response) {
+      //   const restData = await fetchREST(batchStart, batchEnd, batchSize);
+      //   pokemonData.push(...restData);
+      // } else {
+
+      const { data } = response;
+      if (data && data.pokemon_v2_pokemon) {
+        for (const pokemon of data.pokemon_v2_pokemon) {
+          const filteredData = {
+            id: pokemon.id,
+            name: pokemon.name,
+            types: pokemon.types.map((typeData) => typeData.type.name),
+            stats: pokemon.stats.map((statData) => ({
+              name: statData.stat.name,
+              value: statData.base_stat,
+            })),
+            abilities: pokemon.abilities.map(
+              (abilityData) => abilityData.ability.name
+            ),
+            description:
+              pokemon.species?.flavor_text?.[0]?.flavor_text ||
+              "No description available.",
+            sprite: pokemon.sprites?.[0]?.sprites || null,
+          };
+          pokemonData.push(filteredData);
         }
+      } else {
+        console.error(
+          `No data returned for batch ID=${batchStart} to ID=${batchEnd}`
+        );
       }
     }
+  // }
   } catch (error) {
-    console.error("Error fetching Pokémon data:", error);
-  }
-
-  return pokemonData;
+  console.error("Error fetching Pokémon data:", error);
 }
 
-async function fetchREST(startId, endId, batchSize = 20) {
-  if (startId > endId) {
-    throw new Error(
-      `Invalid input: startId (${startId}) cannot be greater than endId (${endId}).`
-    );
-  }
-
-  const pokemonData = [];
-  let offset = startId - 1;
-  endId = endId || startId;
-
-  console.log(
-    `[INFO] ${startId === endId
-      ? `Fetching data for Pokemon ID=${startId}`
-      : `Fetching data from ID=${startId} to ID=${endId}`
-    }`
-  );
-
-  while (offset < endId) {
-    const limit = Math.min(batchSize, endId - offset);
-    const url = `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`;
-
-    try {
-      const data = await fetchWithRetry(url);
-
-      const detailRequests = data.results.map(async (pokemon) => {
-        try {
-          const pokemonDetails = await fetchWithRetry(pokemon.url);
-          return {
-            id: pokemonDetails.id,
-            name: pokemonDetails.name,
-            types: pokemonDetails.types.map((typeData) => typeData.type.name),
-          };
-        } catch (error) {
-          console.error(`Error fetching details for ${pokemon.name}:`, error);
-          return null;
-        }
-      });
-
-      const fetchedDetails = await Promise.all(detailRequests);
-      pokemonData.push(...fetchedDetails.filter(Boolean));
-    } catch (error) {
-      console.error(`Error fetching batch at offset ${offset}:`, error);
-    }
-
-    offset += limit;
-  }
-
-  return pokemonData;
+return pokemonData;
 }
 
-async function fetchWithRetry(url, retries = 3) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await fetch(url);
-      if (!response.ok)
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      console.warn(`Retry ${i + 1}/${retries} for ${url}`);
-    }
-  }
-  throw new Error(`Failed to fetch after ${retries} attempts: ${url}`);
-}
+// async function fetchREST(startId, endId, batchSize = 20) {
+//   if (startId > endId) {
+//     throw new Error(
+//       `Invalid input: startId (${startId}) cannot be greater than endId (${endId}).`
+//     );
+//   }
+
+//   const pokemonData = [];
+//   let offset = startId - 1;
+//   endId = endId || startId;
+
+//   console.log(
+//     `[INFO] ${startId === endId
+//       ? `Fetching data for Pokemon ID=${startId}`
+//       : `Fetching data from ID=${startId} to ID=${endId}`
+//     }`
+//   );
+
+//   while (offset < endId) {
+//     const limit = Math.min(batchSize, endId - offset);
+//     const url = `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`;
+
+//     try {
+//       const data = await fetchWithRetry(url);
+
+//       const detailRequests = data.results.map(async (pokemon) => {
+//         try {
+//           const pokemonDetails = await fetchWithRetry(pokemon.url);
+//           return {
+//             id: pokemonDetails.id,
+//             name: pokemonDetails.name,
+//             types: pokemonDetails.types.map((typeData) => typeData.type.name),
+//           };
+//         } catch (error) {
+//           console.error(`Error fetching details for ${pokemon.name}:`, error);
+//           return null;
+//         }
+//       });
+
+//       const fetchedDetails = await Promise.all(detailRequests);
+//       pokemonData.push(...fetchedDetails.filter(Boolean));
+//     } catch (error) {
+//       console.error(`Error fetching batch at offset ${offset}:`, error);
+//     }
+
+//     offset += limit;
+//   }
+
+//   return pokemonData;
+// }
+
+// async function fetchWithRetry(url, retries = 3) {
+//   for (let i = 0; i < retries; i++) {
+//     try {
+//       const response = await fetch(url);
+//       if (!response.ok)
+//         throw new Error(`HTTP error! Status: ${response.status}`);
+//       return await response.json();
+//     } catch (error) {
+//       console.warn(`Retry ${i + 1}/${retries} for ${url}`);
+//     }
+//   }
+//   throw new Error(`Failed to fetch after ${retries} attempts: ${url}`);
+// }
 
 //
 // DISPLAY POKEMON
@@ -292,7 +293,7 @@ function unpackPokemonData(pokemon) {
     description: removeScapeCharacters(pokemon.description),
     abilities: pokemon.abilities,
     'sprite-url': pokemon.sprite
-  } // Assuming 'sprite' holds the URL
+  }
   const stats = pokemon.stats;
   for (const key in stats) {
     const stat = stats[key];
@@ -301,7 +302,7 @@ function unpackPokemonData(pokemon) {
   return pokemonData;
 }
 
-function displayPokemonCard(pokemonData) { // Changed parameter to pokemonData
+function displayPokemonCard(pokemonData) {
   if (!pokemonData) return;
 
   const pokemonCard = document.createElement("div");
@@ -369,16 +370,21 @@ loadMoreButton.addEventListener("click", () => {
   loadPokedex(currentStartID, currentEndID);
 });
 
+// 
+// SEARCH POKEMON
+// 
 
-// Search functions
 const searchInput = document.getElementById("searchInput");
 const searchButton = document.getElementById("searchButton");
+
+// Return to Pokedex button
 const returnButton = document.createElement("button");
 returnButton.className = "action-button";
 returnButton.textContent = "Return to Pokédex";
-returnButton.style.display = "none"; // Initially hidden
+returnButton.style.display = "none"; // hidden during first load
 actionsContainer.appendChild(returnButton);
 
+// Event listeners
 searchButton.addEventListener("click", () => {
   const query = searchInput.value.trim();
   processSearchInput(query);
@@ -398,18 +404,23 @@ returnButton.addEventListener("click", () => {
 });
 
 
+// Here's the search logic
 async function processSearchInput(query) {
-  if (!query) {
+  console.clear();
+  if (!query) { // Query can't be empty
     alert("Please enter a valid search query.");
     return;
   }
 
-  const sections = query.split(",").map((section) => section.trim());
-  const allPIDs = new Set();
+  const sections = query.split(",").map((section) => section.trim()); // Sub-queries split by commas
+  print("query sections:", sections);
+  const allPIDs = new Set(); // Use a Set to avoid duplicates
+  print("allPIDs:", allPIDs);
 
   for (const section of sections) {
-    const input = removeWhiteSpace(section).toLowerCase();
-
+    const input = removeWhiteSpace(section).toLowerCase(); // 
+    // Remove whitespace and convert to lowercase
+    print(`current section: $input`)
     if (!isNaN(input)) {
       // Direct ID search
       allPIDs.add(Number(input));
@@ -502,4 +513,3 @@ async function fetchByKeyword(keyword, value) {
     return [];
   }
 }
-
