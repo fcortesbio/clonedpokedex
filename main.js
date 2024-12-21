@@ -1,7 +1,6 @@
 // Import functions from modules
 import { displayPokemonCard } from "./displayPokemonCard.js";
 import { fetchPokemonAttributes } from "./fetchPokemonAttributes.js";
-import { fetchPokemonAttributesREST } from "./fetchPokemonAttributesREST.js";
 import { fetchPokemonByQuery } from "./fetchPokemonByQuery.js";
 import { processSearchInput } from "./processSearchInput.js";
 

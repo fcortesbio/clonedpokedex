@@ -1,3 +1,5 @@
+import { fetchGraphQL } from "./fetchGraphQL.js";
+
 export async function fetchPokemonAttributes(ids) {
     const pokemonData = [];
   
