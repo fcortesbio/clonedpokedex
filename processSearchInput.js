@@ -9,8 +9,8 @@ export async function processSearchInput(query) {
     const allPIDs = new Set();
   
     for (const section of sections) {
-      const input = removeWhiteSpace(section).toLowerCase();
-  
+      const input = (section.replace(/\s/g, "")).toLowerCase(); // remove whitespaces
+
       try {
         if (!isNaN(input)) {
           // Direct ID search

@@ -1,3 +1,4 @@
+
 export function displayPokemonCard(pokemonData) {
   if (!pokemonData) return;
 

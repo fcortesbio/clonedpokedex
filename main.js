@@ -1,8 +1,6 @@
 // Import functions from modules
-import { displayPokemonCard } from "./displayPokemonCard.js";
-import { fetchPokemonAttributes } from "./fetchPokemonAttributes.js";
-import { fetchPokemonByQuery } from "./fetchPokemonByQuery.js";
-import { processSearchInput } from "./processSearchInput.js";
+import processSearchInput from "./processSearchInput.js";
+import loadPokedex from "./loadPokedex.js";
 
 // Configuration
 const INITIAL_POKEMON_COUNT = 9;
@@ -14,16 +12,6 @@ const actionsContainer = document.getElementById("actions");
 
 function print(...content) {
   console.log(...content);
-}
-
-async function loadPokedex(start, end) {
-  try {
-    const ids = Array.from({ length: end - start + 1 }, (_, i) => start + i); // Generate an array of IDs from start to end
-    const pokemonData = await fetchPokemonAttributes(ids); // Use fetchPokemonAttributesREST as a fallback if needed
-    pokemonData.forEach(displayPokemonCard);
-  } catch (error) {
-    console.error("Error loading Pokedex:", error);
-  }
 }
 
 // Initial Pokedex load
