@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Redirecting...</title>
+<style>
+body {
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: orange;
+}
+
+.container {
+  text-align: center;
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Redirecting... <span id="countdown">3</span></h1>
+  </div>
+
+  <script>
+    let url = "https://youtu.be/dQw4w9WgXcQ?si=eBvJpbNP7-89dQCv"
+    let count = 3;
+    const countdownElem = document.getElementById('countdown');
+    const customLink = `${url}?autoplay=1&fs=1`; // Embed URL with autoplay and fullscreen
+
+    const interval = setInterval(function() {
+      count--;
+      countdownElem.textContent = count;
+
+      if (count <= 0) {
+        clearInterval(interval);
+        window.location.href = customLink;
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
