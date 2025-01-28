@@ -1,110 +1,97 @@
-# Cloned Pokédex
+# Clonned Pokédex
 
-Welcome to the **Cloned Pokédex** project! This simple web-based application allows users to explore and search for Pokémon using the [PokéAPI](https://pokeapi.co/). Users can browse the Pokédex, search for specific Pokémon, filter them by type, and explore their abilities, types, and sprites.
-
-## Table of Contents
-
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [File Structure](#file-structure)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
-
----
+A simple web-based Pokédex that allows users to browse and search for Pokémon using the [PokéAPI](https://pokeapi.co/). This project is built with HTML, CSS, and JavaScript.
 
 ## Features
 
-- **Browse Pokémon**: View a paginated list of Pokémon, including their names, types, abilities, and sprites.
-- **Search Functionality**: Search by name, ID, type, or range of IDs (e.g., `range:[1-10]`).
-- **Interactive Cards**: Each Pokémon card dynamically displays details such as types and abilities.
-- **Load More Button**: Load more Pokémon incrementally.
-- **Responsive Design**: Optimized for various screen sizes.
+- **Browse Pokémon**: Load and display Pokémon in a grid format with details like name, ID, sprite, type, and abilities.
+- **Load More Pokémon**: Load additional Pokémon in batches.
+- **Search and Filter**: Search for Pokémon by name, ID, type, or range.
+- **Responsive Design**: The Pokédex is designed to work on both desktop and mobile devices.
 
----
+## Getting Started
 
-## Installation
+### Prerequisites
 
-1. Clone the repository:
+- A modern web browser (e.g., Chrome, Firefox, Safari).
+- Basic knowledge of HTML, CSS, and JavaScript.
+
+### Install
+
+1. **Clone the repository**:
+
    ```bash
-   git clone https://github.com/your-username/cloned-pokedex.git
+   git clone https://github.com/fcortesbio/clonnedpokedex.git
    ```
 
-2. Navigate to the project directory:
+2. **Navigate to the project directory**:
+
    ```bash
-   cd cloned-pokedex
+   cd clonnedpokedex
    ```
 
-3. Open `index.html` in your preferred browser:
-   ```
-   open index.html
-   ```
+3. **Open the project**:
+   - Open the `index.html` file in your web browser.
 
----
+Alternatively, you can simply download the project files and open `index.html` in your browser.
 
 ## Usage
 
-1. Open the application in your browser.
-2. Use the navigation bar to explore sections.
-3. Use the search bar to look for Pokémon by name, ID, type, or a range of IDs.
-   - Example searches:
-     - `type:fire`
-     - `range:[1-50]`
-     - `pikachu`
-     - `25`
-4. Click "Load More Pokémon" to load additional entries.
-5. Return to the full Pokédex using the "Return to Pokédex" button.
+### Browsing Pokémon
 
----
+- When the page loads, the initial set of Pokémon will be displayed.
+- Click the **"Load More Pokémon"** button to load additional Pokémon.
 
-## File Structure
+### Searching Pokémon
 
-```
-cloned-pokedex/
-├── index.html          # Main HTML file
-├── main.js             # JavaScript file for functionality
-├── style.css           # CSS for styling
-└── README.md           # Project documentation (this file)
-```
+- Use the search bar to find Pokémon by:
+  - **Name**: Enter the name of the Pokémon (e.g., `pikachu`).
+  - **ID**: Enter the Pokémon's ID (e.g., `25`).
+  - **Type**: Use the `type:` prefix to filter by type (e.g., `type:fire`).
+  - **Range**: Use the `range:` prefix to filter by a range of IDs (e.g., `range:[1-10]`).
+  - **Combination**: Combine multiple search terms using `&` (e.g., `type:fire&range:[1-10]`).
 
----
+- Press **Enter** or click the **Search** button to execute the search.
 
-## Roadmap
+### Returning to the Pokédex
 
-### Features to Add:
-- Improve search suggestions with autocomplete.
-- Add filtering for multiple types (e.g., `type:fire&type:water`).
-- Include Pokémon stats and evolutions.
-- Add a "Favorites" feature for users to save their favorite Pokémon.
+- After performing a search, click the **"Return to Pokédex"** button to go back to browsing all Pokémon.
 
-### Known Issues:
-- Large queries may cause delays or failures due to API limitations.
-- Styling inconsistencies on smaller screens.
+## Code Structure
 
----
+- **HTML**: The structure of the Pokédex is defined in `index.html`.
+- **CSS**: Styling is handled in `styles.css`.
+- **JavaScript**: The logic for fetching and displaying Pokémon data is in `script.js`.
+
+### Key Functions
+
+- **`fetchPokemon(url)`**: Fetches data for a specific Pokémon from the PokéAPI.
+- **`fetchPokemonData(limit, offset)`**: Fetches a list of Pokémon with a specified limit and offset.
+- **`fetchPokemonByType(type)`**: Fetches all Pokémon of a specific type.
+- **`displayPokemon(pokemon)`**: Displays a Pokémon card with details.
+- **`processSearchInput(query)`**: Handles search queries and filters Pokémon accordingly.
 
 ## Contributing
 
-Contributions are welcome! To contribute:
+Contributions are welcome! If you'd like to contribute, please follow these steps:
 
 1. Fork the repository.
-2. Create a new branch:
-   ```bash
-   git checkout -b feature-name
-   ```
-3. Commit your changes:
-   ```bash
-   git commit -m "Add your message here"
-   ```
-4. Push the branch:
-   ```bash
-   git push origin feature-name
-   ```
-5. Open a pull request on GitHub.
-
----
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them.
+4. Submit a pull request.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This is just a learning project, and is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [PokéAPI](https://pokeapi.co/) for providing the Pokémon data.
+- [Pokémon DB](https://pokemondb.net/) for ability links.
+
+## Contact
+
+If you have any questions or feedback, feel free to reach out:
+
+- **Fabian Cortes**: [fcortesbio@gmail.com](mailto:fcortesbio@gmail.com)
+- **GitHub**: [fcortesbio](https://github.com/fcortesbio)
